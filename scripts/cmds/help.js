@@ -25,86 +25,85 @@ module.exports = {
 
     
     if (args.length > 0 && isNaN(args[0])) {
-      const name = args[0].toLowerCase();
+      const flagIndex = args.indexOf("-f");
+      const useNewDesign = flagIndex !== -1;
+
+      const filteredArgs = args.filter(arg => arg !== "-f");
+      const name = filteredArgs[0].toLowerCase();
+
       const cmd =
         commands.get(name) ||
         [...commands.values()].find(c => c.config.aliases?.includes(name));
 
       if (!cmd) return message.reply(`❌ Command not found: ${name}`);
+
       const c = cmd.config;
 
+      
       const info = `
-╭──✦ [ Command: ${c.name.toUpperCase()} ]
-├‣ 📜 Name: ${c.name}
-├‣ 🪶 Aliases: ${c.aliases?.join(", ") || "None"}
-├‣ 👤 Credits: ${c.author || "Unknown"}
-╰‣ 🔑 Permission: ${c.role == 0 ? "Everyone" : (c.role == 1 ? "Group Admin" : "Bot Admin Only")}
-
-╭─✦ [ INFORMATION ]
-├‣ Cost: Free
-├‣ Description:
-│   ${c.longDescription || c.shortDescription || "No description"}
-╰‣ Guide: ${c.guide?.en || `${prefix}${c.name}`}
-
-╭─✦ [ SETTINGS ]
-├‣ 🚩 Prefix Required: ✓ Required
-╰‣ ⚜ Premium: ✗ Free to Use
+╔═══════ 『 COMMAND: ${c.name.toUpperCase()} 』 ═══════╗
+║ 📜 Name      : ${c.name}
+║ 🪶 Aliases   : ${c.aliases?.join(", ") || "None"}
+║ 👤 Credits   : ${c.author || "Unknown"}
+║ 🔑 Permission: ${c.role == 0 ? "Everyone" : (c.role == 1 ? "Group Admin" : "Bot Admin Only")}
+╠════════════════════════════╣
+║ ℹ️ INFORMATION
+║ ────────────────────────
+║ Cost        : Free
+║ Description :
+║   ${c.longDescription || c.shortDescription || "No description"}
+║ Guide       : ${c.guide?.en || `${prefix}${c.name}`}
+╠══════════════════════════════════╣
+║ ⚙️ SETTINGS
+║ ─────────────────────────────────
+║ 🚩 Prefix Required : ✓ Required
+║ ⚜ Premium         : ✗ Free to Use
+╚═══════════════════════════════════╝
 `;
       return message.reply(info);
     }
 
     
-    const categories = {};
-    for (const [, cmd] of commands) {
-      if (!cmd.config || !cmd.config.category) continue;
-      const cat = cmd.config.category.toUpperCase();
-      if (!categories[cat]) categories[cat] = [];
-      categories[cat].push(cmd.config.name);
-    }
 
-    const sortedCategories = Object.keys(categories).sort();
-    sortedCategories.forEach(cat => categories[cat].sort());
+    const allCommands = [...commands.values()]
+      .filter(cmd => cmd.config?.name)
+      .sort((a, b) => a.config.name.localeCompare(b.config.name));
 
-    const perPage = 6;
-    const totalPages = Math.ceil(sortedCategories.length / perPage);
+    const perPage = 20;
+    const totalPages = Math.ceil(allCommands.length / perPage);
     const page = parseInt(args[0]) || 1;
+
     if (page < 1 || page > totalPages) {
       return message.reply(`❌ Page ${page} does not exist. Total pages: ${totalPages}`);
     }
 
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const showCats = sortedCategories.slice(start, end);
-
-    let msg = `✨ [ Guide For Beginners - Page ${page} ] ✨\n\n`;
-
-    for (const cat of showCats) {
-      msg += `╭──── [ ${cat} ]\n`;
-      let line = "│ ";
-      categories[cat].forEach((cmd, i) => {
-        line += `✧ ${cmd}`;
-        if ((i + 1) % 3 === 0) {
-          msg += line + "\n";
-          line = "│ ";
-        }
-      });
-      if (line.trim() !== "│") msg += line + "\n";
-      msg += "╰───────────────◊\n";
-    }
-
-    msg += `\n╭─『 LIKHON BOT 』\n`;
-    msg += `╰‣ Total commands: ${commands.size}\n`;
-    msg += `╰‣ Page ${page} of ${totalPages}\n`;
-    msg += `╰‣ A Personal Facebook Bot\n`;
-    msg += `╰‣ ADMIN: 𝐋𝐈𝐊𝐇𝐎𝐍 𝐀𝐇𝐌𝐄𝐃\n`;
-    msg += `╰‣ If you Don't know how to use commands Then Type ${prefix}help [commandName]`;
+    const cmdsToShow = allCommands.slice(start, end);
 
     
+    let msg = `╭─────────────◊\n`;
+    cmdsToShow.forEach((cmd, index) => {
+      const number = start + index + 1;
+      msg += `│ ${number} ✧ /${cmd.config.name}\n`;
+    });
+    msg += `╰───────────────◊\n\n`;
+
+    
+    msg += `╭─✦『 LIKHON BOT 』✦────────╮\n`;
+    msg += `│                                      │\n`;
+    msg += `│ ✦ Total commands: ${allCommands.length.toString().padEnd(15, " ")}│\n`;
+    msg += `│ ✦ Page: ${page.toString().padEnd(22, " ")}│\n`;
+    msg += `│ ✦ A Personal Facebook Bot            │\n`;
+    msg += `│ ✦ ADMIN: 𝐋𝐈𝐊𝐇𝐎𝐍 𝐀𝐇𝐌𝐄𝐃               │\n`;
+    msg += `│                                      │\n`;
+    msg += `│ ✦ Type ${prefix}help [commandName] for details. │\n`;
+    msg += `╰──────────────────────╯`;
+
     const gifUrl = "https://files.catbox.moe/byp8xa.gif";
     const gifPath = path.join(__dirname, "help.gif");
 
     try {
-      
       if (!fs.existsSync(gifPath)) {
         const response = await axios.get(gifUrl, { responseType: "arraybuffer" });
         fs.writeFileSync(gifPath, Buffer.from(response.data, "binary"));
@@ -115,7 +114,7 @@ module.exports = {
         attachment: fs.createReadStream(gifPath)
       });
     } catch (err) {
-      return message.reply(msg + `\n\n⚠ GIF load হয়নি: ${err.message}`);
+      return message.reply(msg + `\n\n⚠️ GIF লোড হয়নি: ${err.message}`);
     }
   }
 };
