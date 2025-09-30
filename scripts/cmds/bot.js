@@ -3,11 +3,11 @@ const axios = require("axios");
 module.exports = {
   config: {
     name: "bot",
-    version: "2.6",
+    version: "2.7",
     author: "Nazrul | Fixed By LIKHON AHMED",
     countDown: 5,
     role: 0,
-    description: "chat with bot using API + random replies",
+    description: "chat with bot using API + random replies + mention",
     category: "chat",
     guide: {
       en: "{p}bot <message>"
@@ -29,7 +29,10 @@ module.exports = {
       const replyText = res.data?.data?.msg || "🥲 আমি কিছু বুঝতে পারলাম না।";
 
       return api.sendMessage(
-        `‎╭────────────❍\n╰➤ 👤 𝐃𝐞𝐚𝐫『 ${name} 』,\n╰➤ 🗣 ${replyText}\n╰─────────────────➤`,
+        {
+          body: `‎╭────────────❍\n╰➤ 👤 Dear『 ${name} 』,\n╰➤ 🗣 ${replyText}\n╰─────────────────➤`,
+          mentions: [{ tag: name, id: event.senderID }]
+        },
         event.threadID,
         event.messageID
       );
@@ -76,18 +79,21 @@ module.exports = {
       "তুমি কি আমাকে ডেকেছো...? 😇"
     ];
 
-    // নতুন চেক: শুধু প্রথম শব্দ bot/বট হলে reply দিবে
+    
     const firstWord = text.split(" ")[0];
     if (firstWord === "bot" || firstWord === "Bot" || firstWord === "বট") {
       const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
       return api.sendMessage(
-        `‎╭────────────❍\n╰➤ 👤 𝐃𝐞𝐚𝐫『 ${name} 』,\n╰➤ 🗣 ${randomMessage}\n╰─────────────────➤`,
+        {
+          body: `‎╭────────────❍\n╰➤ 👤 Dear『 ${name} 』,\n╰➤ 🗣 ${randomMessage}\n╰─────────────────➤`,
+          mentions: [{ tag: name, id: event.senderID }]
+        },
         event.threadID,
         event.messageID
       );
     }
 
-    // reply হিসেবে যদি বট এর মেসেজ রিপ্লাই হয়
+    
     if (event.type === "message_reply" && event.messageReply?.senderID === api.getCurrentUserID()) {
       try {
         const url = `http://65.109.80.126:20392/sim?type=ask&ask=${encodeURIComponent(text)}`;
@@ -95,7 +101,10 @@ module.exports = {
         const replyText = res.data?.data?.msg || "🥲 আমি কিছু বুঝতে পারলাম না।";
 
         return api.sendMessage(
-          `‎╭────────────❍\n╰➤ 👤 𝐃𝐞𝐚𝐫『 ${name} 』,\n╰➤ 🗣 ${replyText}\n╰─────────────────➤`,
+          {
+            body: `‎╭────────────❍\n╰➤ 👤 Dear『 ${name} 』,\n╰➤ 🗣 ${replyText}\n╰─────────────────➤`,
+            mentions: [{ tag: name, id: event.senderID }]
+          },
           event.threadID,
           event.messageID
         );
