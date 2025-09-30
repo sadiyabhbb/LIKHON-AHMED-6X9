@@ -42,7 +42,6 @@ module.exports = {
     const text = event.body?.trim();
     if (!text) return;
 
-    
     if (event.senderID === api.getCurrentUserID()) return;
 
     if (text.startsWith("/")) return;
@@ -77,7 +76,18 @@ module.exports = {
       "তুমি কি আমাকে ডেকেছো...? 😇"
     ];
 
-    
+    // নতুন চেক: শুধু প্রথম শব্দ bot/বট হলে reply দিবে
+    const firstWord = text.split(" ")[0];
+    if (firstWord === "bot" || firstWord === "Bot" || firstWord === "বট") {
+      const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+      return api.sendMessage(
+        `‎╭────────────❍\n╰➤ 👤 𝐃𝐞𝐚𝐫『 ${name} 』,\n╰➤ 🗣 ${randomMessage}\n╰─────────────────➤`,
+        event.threadID,
+        event.messageID
+      );
+    }
+
+    // reply হিসেবে যদি বট এর মেসেজ রিপ্লাই হয়
     if (event.type === "message_reply" && event.messageReply?.senderID === api.getCurrentUserID()) {
       try {
         const url = `http://65.109.80.126:20392/sim?type=ask&ask=${encodeURIComponent(text)}`;
@@ -92,22 +102,6 @@ module.exports = {
       } catch (err) {
         return api.sendMessage("⚠ API error: " + err.message, event.threadID);
       }
-    }
-
-    
-    const lowerText = text.toLowerCase();
-    if (
-      lowerText.includes("bot") ||
-      lowerText.includes("বট") ||
-      lowerText.includes("robot") ||
-      lowerText.includes("রোবট")
-    ) {
-      const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-      return api.sendMessage(
-        `‎╭────────────❍\n╰➤ 👤 𝐃𝐞𝐚𝐫『 ${name} 』,\n╰➤ 🗣 ${randomMessage}\n╰─────────────────➤`,
-        event.threadID,
-        event.messageID
-      );
     }
   }
 };
