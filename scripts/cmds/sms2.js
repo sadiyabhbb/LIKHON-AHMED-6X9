@@ -1,6 +1,6 @@
 module.exports = {
   config: {
-    name: "sms",
+    name: "sms2",
     version: "1.2",
     author: "LIKHON AHMED",
     countDown: 5,
