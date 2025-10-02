@@ -1,29 +1,16 @@
 const axios = require("axios");
 const FormData = require("form-data");
 
-function getExtensionFromMime(mime) {
-  if (!mime) return "";
-  if (mime.includes("jpeg")) return ".jpg";
-  if (mime.includes("png")) return ".png";
-  if (mime.includes("gif")) return ".gif";
-  if (mime.includes("mp4")) return ".mp4";
-  if (mime.includes("webm")) return ".webm";
-  if (mime.includes("audio/mpeg")) return ".mp3";
-  if (mime.includes("audio/mp4")) return ".m4a";
-  if (mime.includes("pdf")) return ".pdf";
-  return "";
-}
-
 module.exports = {
   config: {
     name: "catbox",
     aliases: ["cb", "cat"],
-    version: "1.4",
+    version: "1.2",
     author: "LIKHON AHMED",
     countDown: 5,
     role: 0,
     shortDescription: "Upload file/image/video/audio to Catbox",
-    longDescription: "Upload a file either by replying to it or using a direct URL and get the Catbox link with correct extension",
+    longDescription: "Upload a file either by replying to it or using a direct URL and get the Catbox link",
     category: "utility",
     guide: {
       en: "{pn} (reply to a file/image OR provide a URL)"
@@ -34,11 +21,13 @@ module.exports = {
     try {
       let fileUrl, filename;
 
+      
       if (event.messageReply && event.messageReply.attachments?.length) {
         const file = event.messageReply.attachments[0];
         fileUrl = file.url;
         filename = file.filename || "upload";
       } 
+      
       else if (args.length && args[0].startsWith("http")) {
         fileUrl = args[0];
         filename = fileUrl.split("/").pop().split("?")[0] || "upload";
@@ -47,25 +36,17 @@ module.exports = {
         return api.sendMessage("❌ Please reply to a file or provide a direct URL to upload.", event.threadID, event.messageID);
       }
 
-      const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
-      const contentType = response.headers["content-type"];
+      
+      const fileData = (await axios.get(fileUrl, { responseType: "arraybuffer" })).data;
 
       const form = new FormData();
       form.append("reqtype", "fileupload");
-      form.append("fileToUpload", Buffer.from(response.data, "binary"), { filename });
+      form.append("fileToUpload", Buffer.from(fileData, "binary"), { filename });
 
       const res = await axios.post("https://catbox.moe/user/api.php", form, { headers: form.getHeaders() });
 
       if (res.data.startsWith("http")) {
-        const ext = getExtensionFromMime(contentType);
-        let finalUrl = res.data.trim();
-
-        
-        if (!finalUrl.endsWith(ext) && ext) {
-          finalUrl += ext;
-        }
-
-        return api.sendMessage(`${finalUrl}`, event.threadID, event.messageID);
+        return api.sendMessage(`${res.data}`, event.threadID, event.messageID);
       } else {
         return api.sendMessage(`⚠ Upload failed: ${res.data}`, event.threadID, event.messageID);
       }
