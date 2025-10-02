@@ -3,14 +3,14 @@ const moment = require('moment-timezone');
 
 module.exports = {
   config: {
-    name: "info2",
+    name: "info",
     aliases: ["inf2", "in42"],
     version: "2.0",
-    author: "nirob",
+    author: "nirob ~> Logic Update LIKHON AHMED",
     countDown: 5,
     role: 0,
     shortDescription: {
-      en: "Sends information about the bot and admin with profile picture."
+      en: "Sends information about the bot and admin."
     },
     category: "Information"
   },
@@ -21,7 +21,7 @@ module.exports = {
 
   onChat: async function({ event, api }) {
     const body = (event.body || "").toLowerCase();
-    if (body === "/info2" || body === "info2") {
+    if (body === "/info" || body === "info") {
       await this.sendInfo({ threadID: event.threadID, senderID: event.senderID }, api);
     }
   },
