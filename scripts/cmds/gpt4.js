@@ -5,7 +5,7 @@ const u = "http://65.109.80.126:20409/aryan/gpt-4";
 module.exports = {
   config: {
     name: "gpt",
-    aliases: ["aix","chat"],
+    aliases: ["aix","v"],
     version: "0.0.2",
     author: "ArYAN",
     countDown: 3,
