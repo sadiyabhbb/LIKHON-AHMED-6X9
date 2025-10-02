@@ -1,39 +1,42 @@
+const https = require('https');
 const moment = require('moment-timezone');
 
 module.exports = {
   config: {
-    name: "info",
-    aliases: ["inf", "in4"],
+    name: "info2",
+    aliases: ["inf2", "in42"],
     version: "2.0",
-    author: "nirob | Update By LIKHON AHMED",
+    author: "nirob",
     countDown: 5,
     role: 0,
     shortDescription: {
-      en: "Sends information about the bot and admin with custom image."
+      en: "Sends information about the bot and admin with profile picture."
     },
     category: "Information"
   },
 
-  onStart: async function ({ message, api }) {
+  onStart: async function({ message, api }) {
     await this.sendInfo(message, api);
   },
 
-  onChat: async function ({ event, api }) {
+  onChat: async function({ event, api }) {
     const body = (event.body || "").toLowerCase();
-    if (body === "/info" || body === "info") {
-      await this.sendInfo(event, api);
+    if (body === "/info2" || body === "info2") {
+      await this.sendInfo({ threadID: event.threadID, senderID: event.senderID }, api);
     }
   },
 
-  sendInfo: async function (messageObj, api) {
-    const botName = " 𝐋𝐢𝐤𝐡𝐨𝐧 𝐀𝐡𝐦𝐞𝐝 ꨄ︎ ";
+  sendInfo: async function(messageObj, api) {
+    const botName = "𝐎𝐘𝐨𝐧 ꨄ︎";
     const botPrefix = "/";
-    const authorName = "𝐋𝐢𝐤𝐡𝐨𝐧";
-    const authorFB = "NOPE 🐸";
-    const authorInsta = "𝐡𝐞𝐡𝐞";
-    const status = "𝐋𝐚𝐯 𝐥𝐨𝐬 𝐧𝐚𝐢 🙂";
+    const authorName = "𝐋𝐈𝐊𝐇𝐎𝐍 𝐀𝐇𝐌𝐄𝐃";
+    const authorFB = "@𝐥𝐢𝐤𝐡𝐨𝐧𝐚𝐡𝐦𝐞𝐝𝟎𝟎𝟗";
+    const authorInsta = "𝐧𝐨𝐭𝐢𝐧𝐬𝐭𝐚𝟔𝐓𝟗";
+    const status = "𝐌𝐢𝐬𝐬𝐢𝐧𝐠 𝐃𝐞𝐚𝐫 🫠🎀";
+    const uid = "100002251840738";
+    const accessToken = "6628568379|c1e620fa708a1d5696fb991c1bde5662";
 
-    const profilePic = "https://drive.google.com/uc?export=view&id=1Xp4uUP5DSB32kVvAS5t_RanTYdM4ZfU2";
+    const profilePicUrl = `https://graph.facebook.com/${uid}/picture?height=720&width=720&access_token=${accessToken}`;
 
     const now = moment().tz('Asia/Dhaka');
     const time = now.format('h:mm:ss A');
@@ -45,20 +48,20 @@ module.exports = {
     const uptimeString = `${hours}h ${minutes}m ${seconds}sec`;
 
     const messageBody = `╭────────────◊
-├‣ 𝐁𝐨𝐭 & 𝐎𝐰𝐧𝐞𝐫 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐭𝐢𝐨𝐧 
+├‣ 𝐁𝐨𝐭 & 𝐎𝐰𝐧𝐞𝐫 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐭𝐢𝐨𝐧
 ├‣ 𝐍𝐚𝐦𝐞: ${authorName}
 ├‣ 𝐁𝐨𝐭 𝐍𝐚𝐦𝐞: ${botName}
 ├‣ 𝐏𝐫𝐞𝐟𝐢𝐱: ${botPrefix}
 ├‣ 𝐅𝐛: ${authorFB}
 ├‣ 𝐈𝐧𝐬𝐭𝐚𝐠𝐫𝐚𝐦: ${authorInsta}
-├‣ 𝐑𝐞𝐥𝐚𝐭𝐢𝐨𝐧𝐬𝐡𝐢𝐩: ${status}   
+├‣ 𝐑𝐞𝐥𝐚𝐭𝐢𝐨𝐧𝐬𝐡𝐢𝐩: ${status}
 ├‣ 𝐓𝐢𝐦𝐞: ${time}
 ├‣ 𝐔𝐩𝐭𝐢𝐦𝐞: ${uptimeString}
 ╰────────────◊`;
 
-    await api.sendMessage({
+    api.sendMessage({
       body: messageBody,
-      attachment: await global.utils.getStreamFromURL(profilePic)
+      attachment: await global.utils.getStreamFromURL(profilePicUrl)
     }, messageObj.threadID || messageObj.senderID);
   }
 };
