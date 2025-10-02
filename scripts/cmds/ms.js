@@ -1,6 +1,6 @@
 module.exports = {
   config: {
-    name: "ping",
+    name: "ms",
     aliases: ["ms"],
     version: "1.0",
     author: "Sandu",
