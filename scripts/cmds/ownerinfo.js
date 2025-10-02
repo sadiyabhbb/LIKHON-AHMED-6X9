@@ -5,7 +5,7 @@ const path = require("path");
 module.exports = {
   config: {
     name: "ownerinfo",
-    author: "Tokodori",
+    author: "Tokodori | Fixed By LIKHON AHMED",
     role: 0,
     shortDescription: "Show bot owner info",
     longDescription: "Display short & styled info about the bot owner",
@@ -19,11 +19,11 @@ module.exports = {
         name: '𝐋𝐈𝐊𝐇𝐎𝐍 𝐗 𝐎𝐘𝐎𝐍',
         age: '19',
         nick: '𝐍𝐀𝐑𝐔𝐓𝐎',
-        gender: '🚹 𝐌𝐀𝐋𝐄',
+        gender: ' 𝐌𝐀𝐋𝐄',
         tag: ' 𝐌𝐈𝐒𝐒𝐈𝐍𝐆 𝐃𝐄𝐀𝐑 🫠🎀'
       };
 
-      const imageURL = 'https://drive.google.com/uc?export=view&id=1ua6xNz_1fG5hccE3i2ox1YHrECriIZux';
+      const imageURL = 'https://drive.google.com/uc?export=view&id=1RnxK_WWPWa913H8vr4yl3Glxyh0kUcsk';
       const tempPath = path.join(__dirname, 'tmp');
       if (!fs.existsSync(tempPath)) fs.mkdirSync(tempPath);
 
