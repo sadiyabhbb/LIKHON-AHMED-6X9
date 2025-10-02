@@ -1,6 +1,6 @@
 module.exports = {
   config: {
-    name: "own",
+    name: "owner",
     version: "1.4",
     author: "Tokodori_Frtiz // remodified by cliff",
     countDown: 5,
