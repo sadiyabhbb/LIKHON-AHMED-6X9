@@ -23,7 +23,7 @@ module.exports = {
         tag: '⌛ 𝐌𝐈𝐒𝐒𝐈𝐍𝐆 𝐃𝐄𝐀𝐑 🫠🎀'
       };
 
-      const videoURL = 'https://files.catbox.moe/026g5j.mp4';
+      const videoURL = 'https://files.catbox.moe/pxt38g';
       const tempPath = path.join(__dirname, 'tmp');
       if (!fs.existsSync(tempPath)) fs.mkdirSync(tempPath);
 
