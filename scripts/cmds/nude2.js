@@ -1,6 +1,6 @@
 module.exports = {
   config: {
-    name: "nude",
+    name: "nude2",
     author: "Romim",
     category: "Nude-pic"
   },
