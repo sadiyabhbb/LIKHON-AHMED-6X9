@@ -1,6 +1,6 @@
 module.exports = {
 	config: {
-		name: 'kickall',
+		name: 'kickxall',
 		version: '2.1.0',
 		author: "Djamal", //do not change credits
 		countDown: 5,
