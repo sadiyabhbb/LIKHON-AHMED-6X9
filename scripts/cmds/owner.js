@@ -21,14 +21,14 @@ module.exports = {
 ║     🌟 𝗢𝘄𝗻𝗲𝗿 𝗜𝗻𝗳𝗼 🌟     ║
 ╚════════════════════╝
 
-👑 𝗡𝗮𝗺𝗲       : 𝐍𝐢𝐫𝐨𝐛  
+👑 𝗡𝗮𝗺𝗲       : 𝐋𝐢𝐤𝐡𝐨𝐧
 🏡 𝗔𝗱𝗱𝗿𝗲𝘀𝘀   : 🌚🤌🏻, 𝗕𝗮𝗻𝗴𝗹𝗮𝗱𝗲𝘀𝗵  
 ⚧ 𝗚𝗲𝗻𝗱𝗲𝗿    : 𝗠𝗮𝗹𝗲  
-🎂 𝗔𝗴𝗲        : 𝟭𝟵 𝘆𝗲𝗮𝗿𝘀  
-🦸 𝗡𝗶𝗰𝗸𝗻𝗮𝗺𝗲  : 𝗞𝗮𝗸𝗮𝘀𝗵𝗶  
+🎂 𝗔𝗴𝗲        : 𝟭𝟴+
+🦸 𝗡𝗶𝗰𝗸𝗻𝗮𝗺𝗲  : 𝗢𝗬𝗼𝗻
 
 💼 𝗢𝗰𝗰𝘂𝗽𝗮𝘁𝗶𝗼𝗻: 𝗦𝗼𝗳𝘁𝘄𝗮𝗿𝗲 𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿  
-📧 𝗘𝗺𝗮𝗶𝗹      : 𝗻𝗶𝗿𝗼𝗯𝘅𝗯𝗼𝘁@𝗻𝗼𝗻𝗺𝗮𝗶𝗹.𝗰𝗼𝗺  
+📧 𝗘𝗺𝗮𝗶𝗹      : 𝗟𝟭𝟰𝗛𝟬𝗡𝗕𝟬𝗧@𝗴𝗺𝗮𝗶𝗹.𝗰𝗼𝗺  
 📱 𝗖𝗼𝗻𝘁𝗮𝗰𝘁    : +8801XXXXXXXXX  
 
 ═══════════════════════════  
@@ -37,8 +37,8 @@ module.exports = {
 ⇨ 𝗮𝗻𝗱 𝗵𝗮𝘃𝗲 𝗳𝘂𝗻!  | (• ◡•)|ꨄ︎  
 ═══════════════════════════
       `,
-        attachment: await global.utils.getStreamFromURL("https://files.catbox.moe/qh3h8h.mp4")
+        attachment: await global.utils.getStreamFromURL("https://drive.google.com/uc?export=view&id=1uy4zwYba6RRWDOvqWxDxWACLjbWRNmgP")
       });
     }
   }
-          }
+}
