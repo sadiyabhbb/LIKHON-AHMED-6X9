@@ -1,49 +1,36 @@
-module.exports = {
-  config: {
-    name: "tag",
-    version: "1.1",
-    author: "Arijit",
-    countDown: 3,
-    role: 0,
-    shortDescription: "Tag mentioned or replied user",
-    longDescription: "Tag a user by mention or by replying to their message with an optional message.",
-    category: "utility",
-    guide: {
-      en: "{pn} [@mention or reply] [optional message]"
-    }
-  },
+const cfg = {
+  name: "tag",
+  version: "2.0",
+  author: "ArYAN",
+  countDown: 0,
+  role: 0,
+  description: "Tag a user",
+  category: "social",
+  guide: { en: "{p}{n} [reply/mention] <text>" }
+};
 
-  onStart: async function ({ api, event, args }) {
-    let targetID;
-    let tagName;
+async function onStart({ api, event, args }) {
+  try {
+    const a = event.messageReply?.senderID || args[0] || event.senderID;
+    const b = await api.getUserInfo(a);
+    if (!b || !b[a]) return api.sendMessage("⚠️ Reply or mention someone to tag.", event.threadID, event.messageID);
 
-    // Replied user
-    if (event.type === "message_reply") {
-      targetID = event.messageReply.senderID;
-      tagName = event.messageReply.senderID;
-    }
-
-    // Mentioned user
-    else if (Object.keys(event.mentions).length > 0) {
-      targetID = Object.keys(event.mentions)[0];
-      tagName = event.mentions[targetID];
-    }
-
-    // No target
-    else {
-      return api.sendMessage("❌ | Please mention a user or reply to someone's message.", event.threadID);
-    }
-
-    // Message body
-    const customMsg = args.join(" ") || "👋 Hey there!";
-    const msg = {
-      body: customMsg,
-      mentions: [{
-        tag: typeof tagName === "string" ? tagName : "User",
-        id: targetID
-      }]
-    };
-
-    return api.sendMessage(msg, event.threadID);
+    const c = b[a].name;
+    const d = args.join(" ") || "";
+    api.sendMessage(
+      {
+        body: `${c} ${d}`,
+        mentions: [{ tag: c, id: a }]
+      },
+      event.threadID,
+      event.messageID
+    );
+  } catch (e) {
+    api.sendMessage("❌ Error: " + e.message, event.threadID, event.messageID);
   }
+}
+
+module.exports = {
+  config: cfg,
+  onStart
 };
