@@ -1,12 +1,14 @@
-const { getTime, drive } = global.utils;
+const { getTime } = global.utils;
+const axios = require("axios");
+
 if (!global.temp.welcomeEvent)
 	global.temp.welcomeEvent = {};
 
 module.exports = {
 	config: {
 		name: "welcome",
-		version: "1.7",
-		author: "NTKhang",
+		version: "2.1",
+		author: "NTKhang + Modified by BADOL",
 		category: "events"
 	},
 
@@ -15,118 +17,105 @@ module.exports = {
 			session1: "sáng",
 			session2: "trưa",
 			session3: "chiều",
-			session4: "tối",
-			welcomeMessage: "Cảm ơn bạn đã mời tôi vào nhóm!\nPrefix bot: %1\nĐể xem danh sách lệnh hãy nhập: %1help",
-			multiple1: "bạn",
-			multiple2: "các bạn",
-			defaultWelcomeMessage: "Xin chào {userName}.\nChào mừng bạn đến với {boxName}.\nChúc bạn có buổi {session} vui vẻ!"
+			session4: "tối"
 		},
 		en: {
 			session1: "morning",
 			session2: "noon",
 			session3: "afternoon",
-			session4: "evening",
-			welcomeMessage: "Thank you for inviting me to the group!\nBot prefix: %1\nTo view the list of commands, please enter: %1help",
-			multiple1: "you",
-			multiple2: "you guys",
-			defaultWelcomeMessage: `Hello {userName}.\nWelcome {multiple} to the chat group: {boxName}\nHave a nice {session} 😊`
+			session4: "evening"
 		}
 	},
 
 	onStart: async ({ threadsData, message, event, api, getLang }) => {
-		if (event.logMessageType == "log:subscribe")
+		if (event.logMessageType == "log:subscribe") {
 			return async function () {
 				const hours = getTime("HH");
 				const { threadID } = event;
 				const { nickNameBot } = global.GoatBot.config;
 				const prefix = global.utils.getPrefix(threadID);
 				const dataAddedParticipants = event.logMessageData.addedParticipants;
-				// if new member is bot
-				if (dataAddedParticipants.some((item) => item.userFbId == api.getCurrentUserID())) {
+
+				if (dataAddedParticipants.some(item => item.userFbId == api.getCurrentUserID())) {
 					if (nickNameBot)
 						api.changeNickname(nickNameBot, threadID, api.getCurrentUserID());
-					return message.send(getLang("welcomeMessage", prefix));
+					return message.send(`🤖 ধন্যবাদ আমাকে গ্রুপে অ্যাড করার জন্য!\nPrefix: ${prefix}\nলিস্ট দেখতে লিখুন: ${prefix}help`);
 				}
-				// if new member:
+
 				if (!global.temp.welcomeEvent[threadID])
 					global.temp.welcomeEvent[threadID] = {
 						joinTimeout: null,
 						dataAddedParticipants: []
 					};
 
-				// push new member to array
 				global.temp.welcomeEvent[threadID].dataAddedParticipants.push(...dataAddedParticipants);
-				// if timeout is set, clear it
 				clearTimeout(global.temp.welcomeEvent[threadID].joinTimeout);
 
-				// set new timeout
 				global.temp.welcomeEvent[threadID].joinTimeout = setTimeout(async function () {
 					const threadData = await threadsData.get(threadID);
 					if (threadData.settings.sendWelcomeMessage == false)
 						return;
+
 					const dataAddedParticipants = global.temp.welcomeEvent[threadID].dataAddedParticipants;
 					const dataBanned = threadData.data.banned_ban || [];
 					const threadName = threadData.threadName;
-					const userName = [],
-						mentions = [];
-					let multiple = false;
 
-					if (dataAddedParticipants.length > 1)
-						multiple = true;
+					const userName = [];
+					const mentions = [];
+
+					const addedByID = event.logMessageData.author;
+					const addedByInfo = await api.getUserInfo(addedByID);
+					const addedByName = addedByInfo[addedByID]?.name || "Unknown";
+					const addedByMention = { tag: addedByName, id: addedByID };
 
 					for (const user of dataAddedParticipants) {
-						if (dataBanned.some((item) => item.id == user.userFbId))
-							continue;
+						if (dataBanned.some(item => item.id == user.userFbId)) continue;
 						userName.push(user.fullName);
-						mentions.push({
-							tag: user.fullName,
-							id: user.userFbId
-						});
+						mentions.push({ tag: user.fullName, id: user.userFbId });
 					}
-					// {userName}:   name of new member
-					// {multiple}:
-					// {boxName}:    name of group
-					// {threadName}: name of group
-					// {session}:    session of day
-					if (userName.length == 0) return;
-					let { welcomeMessage = getLang("defaultWelcomeMessage") } =
-						threadData.data;
+
+					if (userName.length === 0) return;
+
+					const session =
+						hours <= 10
+							? getLang("session1")
+							: hours <= 12
+								? getLang("session2")
+								: hours <= 18
+									? getLang("session3")
+									: getLang("session4");
+
+					const threadInfo = await api.getThreadInfo(threadID);
+					const totalMembers = threadInfo.participantIDs.length;
+
+					const welcomeMessage = `
+🎉 স্বাগতম ${userName.join(", ")}!
+📌 গ্রুপ: ${threadName}
+👥 মোট সদস্য: ${totalMembers} জন
+🕒 সময়: ${session}
+😊 শুভ সময় কাটুক!
+
+➕ Added by: ${addedByName}
+`;
+
 					const form = {
-						mentions: welcomeMessage.match(/\{userNameTag\}/g) ? mentions : null
+						body: welcomeMessage.trim(),
+						mentions: [...mentions, addedByMention]
 					};
-					welcomeMessage = welcomeMessage
-						.replace(/\{userName\}|\{userNameTag\}/g, userName.join(", "))
-						.replace(/\{boxName\}|\{threadName\}/g, threadName)
-						.replace(
-							/\{multiple\}/g,
-							multiple ? getLang("multiple2") : getLang("multiple1")
-						)
-						.replace(
-							/\{session\}/g,
-							hours <= 10
-								? getLang("session1")
-								: hours <= 12
-									? getLang("session2")
-									: hours <= 18
-										? getLang("session3")
-										: getLang("session4")
-						);
 
-					form.body = welcomeMessage;
+					const welcomeGifUrl = "https://drive.google.com/uc?export=view&id=15Fo07tRpUXjATufcKnF7rciLGnp4JeFI";
 
-					if (threadData.data.welcomeAttachment) {
-						const files = threadData.data.welcomeAttachment;
-						const attachments = files.reduce((acc, file) => {
-							acc.push(drive.getFile(file, "stream"));
-							return acc;
-						}, []);
-						form.attachment = (await Promise.allSettled(attachments))
-							.filter(({ status }) => status == "fulfilled")
-							.map(({ value }) => value);
+					try {
+						const response = await axios.get(welcomeGifUrl, { responseType: "stream" });
+						form.attachment = response.data;
+					} catch (err) {
+						console.error("GIF লোড করতে সমস্যা হয়েছে:", err.message);
 					}
+
 					message.send(form);
 					delete global.temp.welcomeEvent[threadID];
 				}, 1500);
 			};
+		}
 	}
 };
