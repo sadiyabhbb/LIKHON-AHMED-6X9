@@ -1,52 +1,70 @@
-const axios = require('axios');
 const jimp = require("jimp");
 const fs = require("fs");
 
 module.exports = {
- config: {
- name: "crush",
- aliases: [],
- version: "1.0",
- author: "AceGun",
- countDown: 5,
- role: 0,
- shortdescription: "هديه للكراش",
- longDescription: "wholesome avatar for crush/lover",
- category: "love",
- guide: ""
- },
+  config: {
+    name: "crush",
+    aliases: [],
+    version: "1.3",
+    author: "Fixed by LIKHON AHMED",
+    countDown: 5,
+    role: 0,
+    shortDescription: "Happy 😉",
+    longDescription: "Wholesome avatar for crush/lover",
+    category: "love",
+    guide: "/crush @tag or reply to a message"
+  },
 
- onStart: async function ({ message, event, args }) {
- const mention = Object.keys(event.mentions);
- if (mention.length == 0) {
- message.reply("TAG");
- return;
- }
+  onStart: async function ({ message, event, api }) {
+    let uid, name;
 
- let one;
- if (mention.length == 1) {
- one = mention[0];
- } else {
- one = mention[0];
- }
+    
+    if (event.mentions && Object.keys(event.mentions).length > 0) {
+      uid = Object.keys(event.mentions)[0];
+      name = event.mentions[uid];
+    } 
+    
+    else if (event.type === "message_reply" && event.messageReply) {
+      uid = event.messageReply.senderID;
+      name = event.messageReply.senderName || "Unknown";
+    } 
+    else {
+      return message.reply("❌ Please tag someone or reply to their message!");
+    }
 
- try {
- const imagePath = await bal(one);
- await message.reply({
- body: "「 is that true?🥰❤️ 」",
- attachment: fs.createReadStream(imagePath)
- });
- } catch (error) {
- console.error("Error while running command:", error);
- await message.reply("an error occurred");
- }
- }
+    try {
+      const imagePath = await createCrushImage(uid);
+      await message.reply({
+        body: `「Is that true? 🥰❤」\nTag: ${name}\nUID: ${uid}`,
+        attachment: fs.createReadStream(imagePath)
+      });
+
+      fs.unlinkSync(imagePath); // Send করার পরে file remove
+    } catch (error) {
+      console.error("Error while running command:", error);
+      await message.reply("❌ An error occurred while creating the image.");
+    }
+  }
 };
-async function bal(one) {
- const avatarone = await jimp.read(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=66262`);
- const image = await jimp.read("https:/8568379%7Cc1e620fa708a1d5696fb991c1bde56/i.imgur.com/BnWiVXT.jpg");
- image.resize(512, 512).composite(avatarone.resize(173, 173), 70, 186);
- const imagePath = "wholesome.png";
- await image.writeAsync(imagePath);
- return imagePath;
+
+async function createCrushImage(uid) {
+  const ACCESS_TOKEN = "6628568379|c1e620fa708a1d5696fb991c1bde5662"; // Token বসাও এখানে
+
+
+  const avatarUrl = `https://graph.facebook.com/${uid}/picture?width=512&height=512&access_token=${ACCESS_TOKEN}`;
+  const avatar = await jimp.read(avatarUrl);
+
+  
+  const base = await jimp.read("https://i.imgur.com/BnWiVXT.jpg");
+  base.resize(512, 512);
+
+  
+  base.composite(avatar.resize(173, 173), 70, 186);
+
+  const cacheDir = __dirname + "/cache";
+  if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
+
+  const imagePath = `${cacheDir}/crush_wholesome.png`;
+  await base.writeAsync(imagePath);
+  return imagePath;
 }
