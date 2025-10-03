@@ -1,7 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+
+const keyFile = path.join(__dirname, "sms2.key");
+
 module.exports = {
   config: {
     name: "sms2",
-    version: "1.3",
+    version: "1.4",
     author: "LIKHON AHMED",
     countDown: 5,
     role: 0,
@@ -9,11 +14,11 @@ module.exports = {
       en: "send sms using api"
     },
     description: {
-      en: "send sms via 2 apis at once"
+      en: "send sms via 2 apis at once and manage api key"
     },
     category: "tools",
     guide: {
-      en: "sms <phone> <amount>"
+      en: "sms2 <phone> <amount>\nkeyadd <key> - Add API key"
     }
   },
 
@@ -22,22 +27,37 @@ module.exports = {
       missing: "please provide phone number and amount",
       sending: "sending sms to %1 with amount %2",
       result: "Result:\n%1",
-      fail: "sms failed: %1"
+      fail: "sms failed: %1",
+      keyAdded: "API key added successfully!",
+      noKey: "No API key found, please add one using /sms2 keyadd <key>"
     }
   },
 
   onStart: async function ({ args, message, getLang }) {
     const axios = require("axios");
-    const number = args[0];
-    const amount = args[1];
-    const key = "fx285329";
-    const baseUrl = "https://api-hub-v2.vercel.app";
 
-    if (!number || !amount) {
-      return message.reply(getLang("missing"));
+    if (!args[0]) return message.reply(getLang("missing"));
+
+    
+    if (args[0].toLowerCase() === "keyadd") {
+      const newKey = args[1];
+      if (!newKey) return message.reply("please provide a key to add");
+      fs.writeFileSync(keyFile, newKey, "utf-8");
+      return message.reply(getLang("keyAdded"));
     }
 
-    // ফোন নাম্বার লুকানো শেষ 6 সংখ্যার জন্য
+    const number = args[0];
+    const amount = args[1];
+
+    if (!number || !amount) return message.reply(getLang("missing"));
+
+    
+    if (!fs.existsSync(keyFile)) return message.reply(getLang("noKey"));
+    const key = fs.readFileSync(keyFile, "utf-8").trim();
+
+    const baseUrl = "https://api-hub-v2.vercel.app";
+
+    
     function maskNumber(num) {
       if (num.length <= 6) return "*".repeat(num.length);
       return num.slice(0, num.length - 6) + "******";
@@ -54,7 +74,6 @@ module.exports = {
       const result1 = res1.status === "fulfilled" ? res1.value.data : { error: res1.reason.message };
       const result2 = res2.status === "fulfilled" ? res2.value.data : { error: res2.reason.message };
 
-      // JSON আকারে সুন্দরভাবে দেখানো
       const output = {
         phone: maskNumber(number),
         amount: amount,
