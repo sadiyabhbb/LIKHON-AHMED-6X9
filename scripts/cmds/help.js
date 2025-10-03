@@ -26,8 +26,6 @@ module.exports = {
     
     if (args.length > 0 && isNaN(args[0])) {
       const flagIndex = args.indexOf("-f");
-      const useNewDesign = flagIndex !== -1;
-
       const filteredArgs = args.filter(arg => arg !== "-f");
       const name = filteredArgs[0].toLowerCase();
 
@@ -39,32 +37,30 @@ module.exports = {
 
       const c = cmd.config;
 
-      
       const info = `
-╔═══════ 『 COMMAND: ${c.name.toUpperCase()} 』 ═══════╗
+╔═══ 『 COMMAND: ${c.name.toUpperCase()} 』 ═══╗
 ║ 📜 Name      : ${c.name}
 ║ 🪶 Aliases   : ${c.aliases?.join(", ") || "None"}
 ║ 👤 Credits   : ${c.author || "Unknown"}
 ║ 🔑 Permission: ${c.role == 0 ? "Everyone" : (c.role == 1 ? "Group Admin" : "Bot Admin Only")}
-╠════════════════════════════╣
-║ ℹ️ INFORMATION
-║ ────────────────────────
+╠════════════════════╣
+║ ℹ INFORMATION
+║ ─────────────────
 ║ Cost        : Free
 ║ Description :
 ║   ${c.longDescription || c.shortDescription || "No description"}
 ║ Guide       : ${c.guide?.en || `${prefix}${c.name}`}
-╠══════════════════════════════════╣
-║ ⚙️ SETTINGS
-║ ─────────────────────────────────
+╠═════════════════════╣
+║ ⚙ SETTINGS
+║ ─────────────────────
 ║ 🚩 Prefix Required : ✓ Required
 ║ ⚜ Premium         : ✗ Free to Use
-╚═══════════════════════════════════╝
+╚══════════════════════╝
 `;
       return message.reply(info);
     }
 
     
-
     const allCommands = [...commands.values()]
       .filter(cmd => cmd.config?.name)
       .sort((a, b) => a.config.name.localeCompare(b.config.name));
@@ -81,7 +77,6 @@ module.exports = {
     const end = start + perPage;
     const cmdsToShow = allCommands.slice(start, end);
 
-    
     let msg = `╭─────────────◊\n`;
     cmdsToShow.forEach((cmd, index) => {
       const number = start + index + 1;
@@ -89,15 +84,13 @@ module.exports = {
     });
     msg += `╰───────────────◊\n\n`;
 
-    
-    msg += `╭─✦『 LIKHON BOT 』✦────────╮\n`;
-    msg += `│                                      │\n`;
-    msg += `│ ✦ Total commands: ${allCommands.length.toString().padEnd(15, " ")}│\n`;
-    msg += `│ ✦ Page: ${page.toString().padEnd(22, " ")}│\n`;
-    msg += `│ ✦ A Personal Facebook Bot            │\n`;
-    msg += `│ ✦ ADMIN: 𝐋𝐈𝐊𝐇𝐎𝐍 𝐀𝐇𝐌𝐄𝐃               │\n`;
-    msg += `│                                      │\n`;
-    msg += `│ ✦ Type ${prefix}help [commandName] for details. │\n`;
+    msg += `╭───✦ LIKHON BOT ✦───╮\n`;
+    msg += `│  Total Commands : ${allCommands.length.toString().padEnd(3, " ")}\n`;
+    msg += `│  Page           : ${page} / ${totalPages}\n`;
+    msg += `│  A Personal Facebook Bot\n`;
+    msg += `│  ADMIN: 𝐋𝐈𝐊𝐇𝐎𝐍 𝐀𝐇𝐌𝐄𝐃\n`;
+    msg += `│\n`;
+    msg += `│  Type ${prefix}help [command] for details\n`;
     msg += `╰──────────────────────╯`;
 
     const gifUrl = "https://files.catbox.moe/byp8xa.gif";
@@ -114,7 +107,7 @@ module.exports = {
         attachment: fs.createReadStream(gifPath)
       });
     } catch (err) {
-      return message.reply(msg + `\n\n⚠️ GIF লোড হয়নি: ${err.message}`);
+      return message.reply(msg + `\n\n⚠ GIF লোড হয়নি: ${err.message}`);
     }
   }
 };
