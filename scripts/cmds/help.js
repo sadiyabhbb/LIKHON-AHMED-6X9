@@ -1,8 +1,5 @@
 const { commands } = global.GoatBot;
 const { getPrefix } = global.utils;
-const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
 
 module.exports = {
   config: {
@@ -94,21 +91,6 @@ module.exports = {
     msg += `│ ✦ Type ${prefix}help [commandName] for details. │\n`;
     msg += `╰──────────────────────╯`;
 
-    const gifUrl = "https://files.catbox.moe/byp8xa.gif";
-    const gifPath = path.join(__dirname, "help.gif");
-
-    try {
-      if (!fs.existsSync(gifPath)) {
-        const response = await axios.get(gifUrl, { responseType: "arraybuffer" });
-        fs.writeFileSync(gifPath, Buffer.from(response.data, "binary"));
-      }
-
-      return message.reply({
-        body: msg,
-        attachment: fs.createReadStream(gifPath)
-      });
-    } catch (err) {
-      return message.reply(msg + `\n\n⚠ GIF লোড হয়নি: ${err.message}`);
-    }
+    return message.reply(msg);
   }
 };
