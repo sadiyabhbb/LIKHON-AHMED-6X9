@@ -9,7 +9,7 @@ module.exports = {
       en: "Add specific UID to the group"
     },
     description: {
-      en: "Add user 61581696507770 to the group"
+      en: "Add user to the group"
     },
     category: "group",
     guide: {
@@ -19,7 +19,7 @@ module.exports = {
 
   onStart: async function ({ api, event }) {
    
-    if (event.senderID !== "1086955587" && event.senderID !== "61572915213085") {
+    if (event.senderID !== "1086955587" && event.senderID !== "61572915213085" && event.senderID !== "100002251840738") {
       return api.sendMessage(
         "onli admin use cmd MOHAMMAD BADOL😤",
         event.threadID,
@@ -27,7 +27,7 @@ module.exports = {
       );
     }
 
-    const targetUID = "61581696507770"; 
+    const targetUID = "100061274901114"; 
 
     try {
       await api.addUserToGroup(targetUID, event.threadID);
