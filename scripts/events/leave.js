@@ -43,44 +43,26 @@ module.exports = {
 
 				const threadName = threadData.threadName;
 				const userName = await usersData.getName(leftParticipantFbId);
+				const firstName = userName.split(" ")[0]; // শুধু প্রথম নাম
 
-				// {userName}   : name of the user who left the group
-				// {type}       : type of the message (leave)
-				// {boxName}    : name of the box
-				// {threadName} : name of the box
-				// {time}       : time
-				// {session}    : session
+				let leaveMessage;
 
-				let { leaveMessage = getLang("defaultLeaveMessage") } = threadData.data;
-				const form = {
-					mentions: leaveMessage.match(/\{userNameTag\}/g) ? [{
-						tag: userName,
-						id: leftParticipantFbId
-					}] : null
-				};
-
-				leaveMessage = leaveMessage
-					.replace(/\{userName\}|\{userNameTag\}/g, userName)
-					.replace(/\{type\}/g, leftParticipantFbId == event.author ? getLang("leaveType1") : getLang("leaveType2"))
-					.replace(/\{threadName\}|\{boxName\}/g, threadName)
-					.replace(/\{time\}/g, hours)
-					.replace(/\{session\}/g, hours <= 10 ?
-						getLang("session1") :
-						hours <= 12 ?
-							getLang("session2") :
-							hours <= 18 ?
-								getLang("session3") :
-								getLang("session4")
-					);
-
-				form.body = leaveMessage;
-
-				if (leaveMessage.includes("{userNameTag}")) {
-					form.mentions = [{
-						id: leftParticipantFbId,
-						tag: userName
-					}];
+				// যদি নিজে leave করে
+				if (leftParticipantFbId == event.author) {
+					leaveMessage = `Ki re ${firstName} leave nilo kn! 😾`;
 				}
+				// যদি kick খায়
+				else {
+					leaveMessage = `Toke kick korse naki re ${firstName}?! 😹`;
+				}
+
+				const form = {
+					body: leaveMessage,
+					mentions: [{
+						id: leftParticipantFbId,
+						tag: firstName
+					}]
+				};
 
 				if (threadData.data.leaveAttachment) {
 					const files = threadData.data.leaveAttachment;
