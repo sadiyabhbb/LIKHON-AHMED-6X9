@@ -2,7 +2,7 @@ const { getTime, drive } = global.utils;
 
 module.exports = {
 	config: {
-		name: "leave",
+		name: "leave | Update By LIKHON AHMED",
 		version: "1.4",
 		author: "NTKhang",
 		category: "events"
